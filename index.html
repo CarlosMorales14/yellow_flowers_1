@@ -203,23 +203,42 @@ function dist(p1, p2) {
 
 ///////// Initial polygon //////////////
 
-function algorithmPoly(gon, R) {
-  let points = [];
-  for (let a = 0; a < 2 * Math.PI; a += 0.1) {
-    let r =
-      R *
-      Math.cos(Math.PI / gon) /
-      Math.cos(a % (2 * Math.PI / gon) - Math.PI / gon);
+// function algorithmPoly(gon, R) {
+//   let points = [];
+//   for (let a = 0; a < 2 * Math.PI; a += 0.1) {
+//     let r =
+//       R *
+//       Math.cos(Math.PI / gon) /
+//       Math.cos(a % (2 * Math.PI / gon) - Math.PI / gon);
 
-    let x = 5000 + r * Math.cos(a);
-    let y = 5000 + r * Math.sin(a);
+//     let x = 5000 + r * Math.cos(a);
+//     let y = 5000 + r * Math.sin(a);
+//     points.push({ x: x, y: y, r: 5 });
+//   }
+//   return points;
+// }
+
+// let points = algorithmPoly(gon, 2500);
+function algorithmPoly(scale, offsetX, offsetY, step) {
+  let points = [];
+  // Ajustar el paso para una mayor o menor densidad de puntos
+  for (let t = 0; t < 2 * Math.PI; t += step) {
+    let x = 16 * Math.pow(Math.sin(t), 3);
+    let y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+    
+    // Escalar y trasladar los puntos
+    x = scale * x + offsetX;
+    y = -scale * y + offsetY; // Negativo en 'y' para orientar correctamente el corazón
+    
     points.push({ x: x, y: y, r: 5 });
   }
   return points;
 }
 
-let points = algorithmPoly(gon, 2500);
-
+// Uso de la función para generar puntos de corazón
+// scale para ajustar el tamaño, offsetX y offsetY para la posición del corazón
+// step para ajustar la densidad de puntos
+let points = algorithmPoly(100, 5000, 5000, 0.1);
 let frames = 0;
 function Frame() {
   rid = window.requestAnimationFrame(Frame);
