@@ -4,42 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-      body{--t:.5; --scale:3;}
-svg.root{width:1px;height:1px;position:absolute;left:-100em;}
-svg{
-  width: 100vw;
-  height: 100vh;
-  background:#c5d9fe;
-  fill-opacity:0.75;
-}
+        body{--t:.5; --scale:3;}
+        svg.root{width:1px;height:1px;position:absolute;left:-100em;}
+        svg{
+        width: 100vw;
+        height: 100vh;
+        background:#f9f6f2;
+        fill-opacity:0.75;
+        }
 
-symbol{overflow:visible}
+        symbol{overflow:visible}
 
-svg use{transform:rotate(0deg); transition:transform calc(var(--t) * 1s);}
+        svg use{transform:rotate(0deg); transition:transform calc(var(--t) * 1s);}
 
-svg g.a{transition:transform calc(var(--t) * 1s);}
-svg g.a{transform:scale(var(--scale)) rotate(-90deg);
-filter:url('#f')
-}
+        svg g.a{transition:transform calc(var(--t) * 1s);}
+        svg g.a{transform:scale(var(--scale)) rotate(-90deg);
+        filter:url('#f')
+        }
 
 
-._2{--n : 2;}
-._3{--n : 3;}
-._4{--n : 4;}
-._5{--n : 5;}
+        ._2{--n : 2;}
+        ._3{--n : 3;}
+        ._4{--n : 4;}
+        ._5{--n : 5;}
 
-svg .a g:nth-of-type(1){transform:rotate(calc(-.5 * 180deg / var(--n)));}
-svg .a g:nth-of-type(2){transform:rotate(calc( .5 * 180deg / var(--n)));}
+        svg .a g:nth-of-type(1){transform:rotate(calc(-.5 * 180deg / var(--n)));}
+        svg .a g:nth-of-type(2){transform:rotate(calc( .5 * 180deg / var(--n)));}
 
-svg .a g:nth-of-type(1) use:nth-of-type(2){transform:rotate(calc(-1deg * 180 / var(--n)));}
-svg .a g:nth-of-type(1) use:nth-of-type(3){transform:rotate(calc(-2deg * 180 / var(--n)));}
-svg .a g:nth-of-type(1) use:nth-of-type(4){transform:rotate(calc(-3deg * 180 / var(--n)));}
-svg .a g:nth-of-type(1) use:nth-of-type(5){transform:rotate(calc(-4deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(1) use:nth-of-type(2){transform:rotate(calc(-1deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(1) use:nth-of-type(3){transform:rotate(calc(-2deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(1) use:nth-of-type(4){transform:rotate(calc(-3deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(1) use:nth-of-type(5){transform:rotate(calc(-4deg * 180 / var(--n)));}
 
-svg .a g:nth-of-type(2) use:nth-of-type(2){transform:rotate(calc(1deg * 180 / var(--n)));}
-svg .a g:nth-of-type(2) use:nth-of-type(3){transform:rotate(calc(2deg * 180 / var(--n)));}
-svg .a g:nth-of-type(2) use:nth-of-type(4){transform:rotate(calc(3deg * 180 / var(--n)));}
-svg .a g:nth-of-type(2) use:nth-of-type(5){transform:rotate(calc(4deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(2) use:nth-of-type(2){transform:rotate(calc(1deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(2) use:nth-of-type(3){transform:rotate(calc(2deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(2) use:nth-of-type(4){transform:rotate(calc(3deg * 180 / var(--n)));}
+        svg .a g:nth-of-type(2) use:nth-of-type(5){transform:rotate(calc(4deg * 180 / var(--n)));}
     </style>
     <title>Yellow Flowers</title>
   </head>
@@ -82,184 +82,184 @@ svg .a g:nth-of-type(2) use:nth-of-type(5){transform:rotate(calc(4deg * 180 / va
       </svg>
 
     <script>
-      const SVG_NS = "http://www.w3.org/2000/svg";
-const SVG_XLINK = "http://www.w3.org/1999/xlink";
-let rid = null;
-let gon = 7;// 3,4,5,6....
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        const SVG_XLINK = "http://www.w3.org/1999/xlink";
+        let rid = null;
+        let gon = 7;// 3,4,5,6....
 
-const colors = [
-  "#f0c929",
-  "#f0d64e",
-  "#f7e883",
-  "#fdf0b7",
-  "#fff8eb",
-  "#e6d172",
-  "#ccb739",
-  "#f8edc2"
-];
+        const colors = [
+        "#f0c929",
+        "#f0d64e",
+        "#f7e883",
+        "#fdf0b7",
+        "#fff8eb",
+        "#e6d172",
+        "#ccb739",
+        "#f8edc2"
+        ];
 
-let m = { x: 0, y: 0 };
-let previous = { x: 0, y: 0 };
-let scale = 1;
-let bool = false;
+        let m = { x: 0, y: 0 };
+        let previous = { x: 0, y: 0 };
+        let scale = 1;
+        let bool = false;
 
-class Flower {
-  constructor(n, pos, scale, parent) {
-    this.n = n;
-    this.scale = scale;
-    this.pos = pos;
-    this.width = 40;
-    this.height = 40;
-    this.color = colors[~~(Math.random() * colors.length)];
-    this.parent = parent;
+        class Flower {
+        constructor(n, pos, scale, parent) {
+            this.n = n;
+            this.scale = scale;
+            this.pos = pos;
+            this.width = 40;
+            this.height = 40;
+            this.color = colors[~~(Math.random() * colors.length)];
+            this.parent = parent;
 
-    this.markup();
-  }
+            this.markup();
+        }
 
-  markup() {
-    this.G = document.createElementNS(SVG_NS, "g");
-    this.G.setAttribute("style", `--scale:${this.scale};`);
-    let rot = ~~(Math.random() * 180);
-    this.G.setAttributeNS(
-      null,
-      "transform",
-      `translate(${this.pos.x},${this.pos.y}) rotate(${rot})`
-    );
-    this.G.setAttributeNS(null, "fill", this.color);
-    let ga = document.createElementNS(SVG_NS, "g");
-    ga.setAttribute("class", "a");
+        markup() {
+            this.G = document.createElementNS(SVG_NS, "g");
+            this.G.setAttribute("style", `--scale:${this.scale};`);
+            let rot = ~~(Math.random() * 180);
+            this.G.setAttributeNS(
+            null,
+            "transform",
+            `translate(${this.pos.x},${this.pos.y}) rotate(${rot})`
+            );
+            this.G.setAttributeNS(null, "fill", this.color);
+            let ga = document.createElementNS(SVG_NS, "g");
+            ga.setAttribute("class", "a");
 
-    for (let i = 0; i < 2; i++) {
-      // left, right
-      let g = document.createElementNS(SVG_NS, "g");
-      for (let j = 0; j < this.n; j++) {
-        let use = document.createElementNS(SVG_NS, "use");
-        use.setAttributeNS(SVG_XLINK, "xlink:href", `#petal${this.n}`);
-        use.setAttributeNS(null, "width", this.width);
-        use.setAttributeNS(null, "height", this.height);
+            for (let i = 0; i < 2; i++) {
+            // left, right
+            let g = document.createElementNS(SVG_NS, "g");
+            for (let j = 0; j < this.n; j++) {
+                let use = document.createElementNS(SVG_NS, "use");
+                use.setAttributeNS(SVG_XLINK, "xlink:href", `#petal${this.n}`);
+                use.setAttributeNS(null, "width", this.width);
+                use.setAttributeNS(null, "height", this.height);
 
-        g.appendChild(use);
-      }
-      ga.appendChild(g);
-    }
-    this.G.appendChild(ga);
+                g.appendChild(use);
+            }
+            ga.appendChild(g);
+            }
+            this.G.appendChild(ga);
 
-    this.parent.appendChild(this.G);
-  }
-}
+            this.parent.appendChild(this.G);
+        }
+        }
 
 
-svg.addEventListener("mousedown", e => {
-  // clear the canvas
-  while (svg.lastChild) {
-    svg.removeChild(svg.lastChild);
-  }
-  // if bool == true I can draw
-  bool = true;
-});
+        svg.addEventListener("mousedown", e => {
+        // clear the canvas
+        while (svg.lastChild) {
+            svg.removeChild(svg.lastChild);
+        }
+        // if bool == true I can draw
+        bool = true;
+        });
 
-svg.addEventListener("mouseup", e => {
-  bool = false;
-  previous = {};
-});
+        svg.addEventListener("mouseup", e => {
+        bool = false;
+        previous = {};
+        });
 
-svg.addEventListener("mousemove", e => {
-  if (bool) {
-    m = oMousePosSVG(e);
-    // number of petals
-    let n = 2 + ~~(Math.random() * 4);
-    // set the scale
-    if (previous.x) {
-      let d = dist(m, previous);
-      scale = d / 30;
-    } else {
-      scale = 1;
-    }
+        svg.addEventListener("mousemove", e => {
+        if (bool) {
+            m = oMousePosSVG(e);
+            // number of petals
+            let n = 2 + ~~(Math.random() * 4);
+            // set the scale
+            if (previous.x) {
+            let d = dist(m, previous);
+            scale = d / 30;
+            } else {
+            scale = 1;
+            }
 
-    let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg);
-    setTimeout(() => {
-      flower.G.setAttribute("class", `_${flower.n}`);
-    }, 50);
+            let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg);
+            setTimeout(() => {
+            flower.G.setAttribute("class", `_${flower.n}`);
+            }, 50);
 
-    previous.x = m.x;
-    previous.y = m.y;
-  } //if bool
-});
+            previous.x = m.x;
+            previous.y = m.y;
+        } //if bool
+        });
 
-function oMousePosSVG(e) {
-  var p = svg.createSVGPoint();
-  p.x = e.clientX;
-  p.y = e.clientY;
-  var ctm = svg.getScreenCTM().inverse();
-  var p = p.matrixTransform(ctm);
-  return p;
-}
+        function oMousePosSVG(e) {
+        var p = svg.createSVGPoint();
+        p.x = e.clientX;
+        p.y = e.clientY;
+        var ctm = svg.getScreenCTM().inverse();
+        var p = p.matrixTransform(ctm);
+        return p;
+        }
 
-function dist(p1, p2) {
-  let dx = p2.x - p1.x;
-  let dy = p2.y - p1.y;
-  return Math.sqrt(dx * dx + dy * dy);
-}
+        function dist(p1, p2) {
+        let dx = p2.x - p1.x;
+        let dy = p2.y - p1.y;
+        return Math.sqrt(dx * dx + dy * dy);
+        }
 
-///////// Initial polygon //////////////
+        ///////// Initial polygon //////////////
 
-// function algorithmPoly(gon, R) {
-//   let points = [];
-//   for (let a = 0; a < 2 * Math.PI; a += 0.1) {
-//     let r =
-//       R *
-//       Math.cos(Math.PI / gon) /
-//       Math.cos(a % (2 * Math.PI / gon) - Math.PI / gon);
+        // function algorithmPoly(gon, R) {
+        //   let points = [];
+        //   for (let a = 0; a < 2 * Math.PI; a += 0.1) {
+        //     let r =
+        //       R *
+        //       Math.cos(Math.PI / gon) /
+        //       Math.cos(a % (2 * Math.PI / gon) - Math.PI / gon);
 
-//     let x = 5000 + r * Math.cos(a);
-//     let y = 5000 + r * Math.sin(a);
-//     points.push({ x: x, y: y, r: 5 });
-//   }
-//   return points;
-// }
+        //     let x = 5000 + r * Math.cos(a);
+        //     let y = 5000 + r * Math.sin(a);
+        //     points.push({ x: x, y: y, r: 5 });
+        //   }
+        //   return points;
+        // }
 
-// let points = algorithmPoly(gon, 2500);
-function algorithmPoly(scale, offsetX, offsetY, step) {
-  let points = [];
-  // Ajustar el paso para una mayor o menor densidad de puntos
-  for (let t = 0; t < 2 * Math.PI; t += step) {
-    let x = 16 * Math.pow(Math.sin(t), 3);
-    let y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-    
-    // Escalar y trasladar los puntos
-    x = scale * x + offsetX;
-    y = -scale * y + offsetY; // Negativo en 'y' para orientar correctamente el corazón
-    
-    points.push({ x: x, y: y, r: 5 });
-  }
-  return points;
-}
+        // let points = algorithmPoly(gon, 2500);
+        function algorithmPoly(scale, offsetX, offsetY, step) {
+        let points = [];
+        // Ajustar el paso para una mayor o menor densidad de puntos
+        for (let t = 0; t < 2 * Math.PI; t += step) {
+            let x = 16 * Math.pow(Math.sin(t), 3);
+            let y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+            
+            // Escalar y trasladar los puntos
+            x = scale * x + offsetX;
+            y = -scale * y + offsetY; // Negativo en 'y' para orientar correctamente el corazón
+            
+            points.push({ x: x, y: y, r: 5 });
+        }
+        return points;
+        }
 
-// Uso de la función para generar puntos de corazón
-// scale para ajustar el tamaño, offsetX y offsetY para la posición del corazón
-// step para ajustar la densidad de puntos
-let points = algorithmPoly(150, 5000, 5000, 0.1);
-let frames = 0;
-function Frame() {
-  rid = window.requestAnimationFrame(Frame);
+        // Uso de la función para generar puntos de corazón
+        // scale para ajustar el tamaño, offsetX y offsetY para la posición del corazón
+        // step para ajustar la densidad de puntos
+        let points = algorithmPoly(150, 5000, 5000, 0.1);
+        let frames = 0;
+        function Frame() {
+        rid = window.requestAnimationFrame(Frame);
 
-  if (frames >= points.length) {
-    window.cancelAnimationFrame(rid);
-    rid = null;
-  }
-  m = points[frames];
-  let n = 2 + ~~(Math.random() * 4);
-  scale = ~~(Math.random() * 12) + 3;
+        if (frames >= points.length) {
+            window.cancelAnimationFrame(rid);
+            rid = null;
+        }
+        m = points[frames];
+        let n = 2 + ~~(Math.random() * 4);
+        scale = ~~(Math.random() * 12) + 3;
 
-  let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg);
-  setTimeout(() => {
-    flower.G.setAttribute("class", `_${flower.n}`);
-  }, 50);
+        let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg);
+        setTimeout(() => {
+            flower.G.setAttribute("class", `_${flower.n}`);
+        }, 50);
 
-  frames++;
-}
+        frames++;
+        }
 
-Frame();
+        Frame();
     </script>
   </body>
 </html>
