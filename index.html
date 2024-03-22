@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body{--t:.5; --scale:3;}
+      svg.root{width:1px;height:1px;position:absolute;left:-100em;}
+      svg{
+        width: 100vw;
+        height: 100vh;
+        background:#c5d9fe;
+        fill-opacity:0.75;
+      }
+
+      symbol{overflow:visible}
+
+      svg use{
+      transform:rotate(180deg));
+      transition:transform calc(var(--t) * 1s);
+      }
+
+      svg g.a{transition:transform calc(var(--t) * 1s);}
+      svg g.a{transform:scale(var(--scale)) rotate(-90deg);
+      filter:url('#f')
+      }
+
+
+      ._2{--n : 2;}
+      ._3{--n : 3;}
+      ._4{--n : 4;}
+      ._5{--n : 5;}
+
+      svg .a g:nth-of-type(1){transform:rotate(calc(-.5 * 180deg / var(--n)));}
+      svg .a g:nth-of-type(2){transform:rotate(calc( .5 * 180deg / var(--n)));}
+
+      svg .a g:nth-of-type(1) use:nth-of-type(2){transform:rotate(calc(-1deg * 180 / var(--n)));}
+      svg .a g:nth-of-type(1) use:nth-of-type(3){transform:rotate(calc(-2deg * 180 / var(--n)));}
+      svg .a g:nth-of-type(1) use:nth-of-type(4){transform:rotate(calc(-3deg * 180 / var(--n)));}
+      svg .a g:nth-of-type(1) use:nth-of-type(5){transform:rotate(calc(-4deg * 180 / var(--n)));}
+
+      svg .a g:nth-of-type(2) use:nth-of-type(2){transform:rotate(calc(1deg * 180 / var(--n)));}
+      svg .a g:nth-of-type(2) use:nth-of-type(3){transform:rotate(calc(2deg * 180 / var(--n)));}
+      svg .a g:nth-of-type(2) use:nth-of-type(4){transform:rotate(calc(3deg * 180 / var(--n)));}
+      svg .a g:nth-of-type(2) use:nth-of-type(5){transform:rotate(calc(4deg * 180 / var(--n)));}
+    </style>
+    <title>Document</title>
+  </head>
+  <body>
+    <svg class="root">
+      <defs>
+        <filter id="f" width="200" height="200" x="-100" y="-100">
+          <feGaussianBlur
+            in="SourceAlpha"
+            stdDeviation="3"
+            result="blur"
+          ></feGaussianBlur>
+          <feFlood flood-color="rgb(60,10,60)" result="color" />
+          <feComposite in="color" in2="blur" operator="in" result="shadow" />
+          <feOffset in="shadow" dx="3" dy="3" result="offset"></feOffset>
+          <feMerge>
+            <feMergeNode in="offset" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <symbol id="petal2" viewBox="0 -100 200 200">
+          <!--<polygon points="0,0 120,80 200,0 120,-80 0,0" />-->
+          <path
+            transform="translate(0,-100)"
+            d="M25.91,-15.12 Q0,0 25.91,15.12L94.09,54.889 Q120,70 142.58,50.24L177.42,19.76 Q200,0 177.42,-19.756L142.58,-50.24 Q120,-70 94.087,-54.88Z"
+          ></path>
+        </symbol>
+
+        <symbol id="petal3" viewBox="0 -100 200 200">
+          <!--<polygon points="0,0 120,50 200,0 120,-50 0,0" />-->
+          <path
+            transform="translate(0,-100)"
+            d="M27.69,-11.54  Q0,0 27.69,11.54  L92.3,38.46  Q120,50 145.44,34.1 L174.56,15.9  Q200,0 174.56,-15.9 L145.44,-34.1 Q120,-50 92.3,-38.46Z"
+          ></path>
+        </symbol>
+
+        <symbol id="petal4" viewBox="0 -100 200 200">
+          <!--<polygon points="0,0 120,50 200,0 120,-50 0,0" />-->
+          <path
+            transform="translate(0,-100)"
+            d="M28.09,-10.53 Q0,0 28.09,10.53L91.91,34.47 Q120,45 146.147,30.29L173.85,14.7 Q200,0 173.85,-14.7L146.15,-30.29 Q120,-45 91.91,-34.467Z"
+          ></path>
+        </symbol>
+        <symbol id="petal5" viewBox="0 -100 200 200">
+          <!--<polygon points="0,0 140,40 200,0 140,-40 0,0" />-->
+          <path
+            transform="translate(0,-100)"
+            d="M28.85,-8.24 Q0,0 28.85,8.24L111.15,31.76 Q140,40 164.96,23.36L175.04,16.64 Q200,0 175.038,-16.64L164.96,-23.36 Q140,-40 111.15,-31.76Z"
+          ></path>
+        </symbol>
+      </defs>
+    </svg>
+
+    <svg
+      viewBox="0 0 10000 10000"
+      id="svg"
+      preserveAspectRatio="xMidYMid slice"
+    ></svg>
+
+    <script>
+      const SVG_NS = 'http://www.w3.org/2000/svg'
+      const SVG_XLINK = 'http://www.w3.org/1999/xlink'
+      let rid = null
+      let gon = 7 // 3,4,5,6....
+
+      const colors = [
+        '#ba3763',
+        '#d34076',
+        '#dbb0cc',
+        '#fddafa',
+        '#fef2fe',
+        '#eec0db',
+        '#ca809a',
+        '#e9d8e8',
+      ]
+
+      let m = { x: 0, y: 0 }
+      let previous = { x: 0, y: 0 }
+      let scale = 1
+      let bool = false
+
+      class Flower {
+        constructor(n, pos, scale, parent) {
+          this.n = n
+          this.scale = scale
+          this.pos = pos
+          this.width = 40
+          this.height = 40
+          this.color = colors[(Math.random() * colors.length)]
+          this.parent = parent
+
+          this.markup()
+        }
+
+        markup() {
+          this.G = document.createElementNS(SVG_NS, 'g')
+          this.G.setAttribute('style', --scale:${this.scale};)
+          let rot = ~~(Math.random() * 180)
+          this.G.setAttributeNS(
+            null,
+            'transform',
+            translate(${this.pos.x},${this.pos.y}) rotate(${rot})
+          )
+          this.G.setAttributeNS(null, 'fill', this.color)
+          let ga = document.createElementNS(SVG_NS, 'g')
+          ga.setAttribute('class', 'a')
+
+          for (let i = 0; i < 2; i++) {
+            // left, right
+            let g = document.createElementNS(SVG_NS, 'g')
+            for (let j = 0; j < this.n; j++) {
+              let use = document.createElementNS(SVG_NS, 'use')
+              use.setAttributeNS(SVG_XLINK, 'xlink:href', #petal${this.n})
+              use.setAttributeNS(null, 'width', this.width)
+              use.setAttributeNS(null, 'height', this.height)
+
+              g.appendChild(use)
+            }
+            ga.appendChild(g)
+          }
+          this.G.appendChild(ga)
+
+          this.parent.appendChild(this.G)
+        }
+      }
+
+      svg.addEventListener('mousedown', e => {
+        // clear the canvas
+        while (svg.lastChild) {
+          svg.removeChild(svg.lastChild)
+        }
+        // if bool == true I can draw
+        bool = true
+      })
+
+      svg.addEventListener('mouseup', e => {
+        bool = false
+        previous = {}
+      })
+
+      svg.addEventListener('mousemove', e => {
+        if (bool) {
+          m = oMousePosSVG(e)
+          // number of petals
+          let n = 2 + ~~(Math.random() * 4)
+          // set the scale
+          if (previous.x) {
+            let d = dist(m, previous)
+            scale = d / 30
+          } else {
+            scale = 1
+          }
+
+          let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg)
+          setTimeout(() => {
+            flower.G.setAttribute('class', _${flower.n})
+          }, 50)
+
+          previous.x = m.x
+          previous.y = m.y
+        } //if bool
+      })
+
+      function oMousePosSVG(e) {
+        var p = svg.createSVGPoint()
+        p.x = e.clientX
+        p.y = e.clientY
+        var ctm = svg.getScreenCTM().inverse()
+        var p = p.matrixTransform(ctm)
+        return p
+      }
+
+      function dist(p1, p2) {
+        let dx = p2.x - p1.x
+        let dy = p2.y - p1.y
+        return Math.sqrt(dx * dx + dy * dy)
+      }
+
+      ///////// Initial polygon //////////////
+
+      function algorithmPoly(gon, R) {
+        let points = []
+        for (let a = 0; a < 2 * Math.PI; a += 0.1) {
+          let r =
+            (R * Math.cos(Math.PI / gon)) /
+            Math.cos((a % ((2 * Math.PI) / gon)) - Math.PI / gon)
+
+          let x = 5000 + r * Math.cos(a)
+          let y = 5000 + r * Math.sin(a)
+          points.push({ x: x, y: y, r: 5 })
+        }
+        return points
+      }
+
+      let points = algorithmPoly(gon, 2500)
+
+      let frames = 0
+      function Frame() {
+        rid = window.requestAnimationFrame(Frame)
+
+        if (frames >= points.length) {
+          window.cancelAnimationFrame(rid)
+          rid = null
+        }
+        m = points[frames]
+        let n = 2 + ~~(Math.random() * 4)
+        scale = ~~(Math.random() * 12) + 3
+
+        let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg)
+        setTimeout(() => {
+          flower.G.setAttribute('class', _${flower.n})
+        }, 50)
+
+        frames++
+      }
+
+      Frame()
+    </script>
+  </body>
+</html>
