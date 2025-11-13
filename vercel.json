@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "name": "yellow-flowers-realtime",
+  "functions": {
+    "api/socketio.js": {
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

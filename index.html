@@ -41,6 +41,46 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
+        #statusIndicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        #statusIndicator.connected {
+            background: #4CAF50;
+            color: white;
+        }
+
+        #statusIndicator.disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        #statusIndicator.connecting {
+            background: #ff9800;
+            color: white;
+        }
+
+        #userCount {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            padding: 8px 16px;
+            background: rgba(240, 201, 41, 0.9);
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            z-index: 1000;
+        }
+
         symbol{overflow:visible}
 
         svg use{transform:rotate(0deg); transition:transform calc(var(--t) * 1s);}
@@ -72,6 +112,8 @@
     <title>Yellow Flowers</title>
   </head>
   <body>
+    <div id="statusIndicator" class="connecting">🔄 Conectando...</div>
+    <div id="userCount">👥 0 usuarios</div>
     <button id="clearButton">🌸 Limpiar</button>
     <svg class="root">
         <defs>
@@ -110,11 +152,105 @@
       
       </svg>
 
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
         const SVG_NS = "http://www.w3.org/2000/svg";
         const SVG_XLINK = "http://www.w3.org/1999/xlink";
         let rid = null;
         let gon = 7;// 3,4,5,6....
+
+        // Socket.IO Configuration
+        let socket;
+        let isConnected = false;
+        let userCount = 0;
+        const statusIndicator = document.getElementById('statusIndicator');
+        const userCountElement = document.getElementById('userCount');
+
+        // Inicializar Socket.IO
+        function initSocket() {
+            const isProduction = window.location.hostname !== 'localhost';
+            const socketPath = isProduction ? '/api/socketio' : '/socket.io';
+            
+            socket = io({
+                path: socketPath,
+                transports: ['websocket', 'polling'],
+                upgrade: true,
+                rememberUpgrade: true
+            });
+
+            socket.on('connect', () => {
+                console.log('Conectado al servidor');
+                isConnected = true;
+                updateStatus('connected', '🟢 Conectado');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Desconectado del servidor');
+                isConnected = false;
+                updateStatus('disconnected', '🔴 Desconectado');
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Error de conexión:', error);
+                updateStatus('disconnected', '❌ Error de conexión');
+            });
+
+            // Recibir flores iniciales
+            socket.on('initialFlowers', (flowers) => {
+                flowers.forEach(flowerData => {
+                    createFlowerFromData(flowerData);
+                });
+            });
+
+            // Recibir nuevas flores de otros usuarios
+            socket.on('newFlower', (flowerData) => {
+                createFlowerFromData(flowerData, true);
+            });
+
+            // Recibir evento de limpiar canvas
+            socket.on('canvasCleared', () => {
+                clearCanvasLocal();
+            });
+
+            // Heartbeat para mantener conexión
+            setInterval(() => {
+                if (socket && socket.connected) {
+                    socket.emit('ping');
+                }
+            }, 25000);
+        }
+
+        function updateStatus(status, text) {
+            statusIndicator.className = status;
+            statusIndicator.textContent = text;
+        }
+
+        function createFlowerFromData(flowerData, isFromOther = false) {
+            const flower = new Flower(
+                flowerData.n, 
+                flowerData.pos, 
+                flowerData.scale, 
+                svg
+            );
+            if (flowerData.color) {
+                flower.color = flowerData.color;
+                flower.G.setAttributeNS(null, "fill", flowerData.color);
+            }
+            setTimeout(() => {
+                flower.G.setAttribute("class", `_${flower.n}`);
+            }, 50);
+            
+            // Efecto visual para flores de otros usuarios
+            if (isFromOther) {
+                flower.G.style.opacity = '0';
+                flower.G.style.transform += ' scale(0.5)';
+                setTimeout(() => {
+                    flower.G.style.transition = 'all 0.3s ease';
+                    flower.G.style.opacity = '0.75';
+                    flower.G.style.transform = flower.G.style.transform.replace('scale(0.5)', 'scale(1)');
+                }, 10);
+            }
+        }
 
         const colors = [
         "#f0c929",
@@ -201,10 +337,24 @@
             scale = 1;
             }
 
+            const color = colors[~~(Math.random() * colors.length)];
             let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg);
+            flower.color = color;
+            
             setTimeout(() => {
             flower.G.setAttribute("class", `_${flower.n}`);
             }, 50);
+
+            // Enviar flor a otros usuarios si está conectado
+            if (socket && socket.connected) {
+                const flowerData = {
+                    n: n,
+                    pos: { x: m.x, y: m.y },
+                    scale: scale,
+                    color: color
+                };
+                socket.emit('drawFlower', flowerData);
+            }
 
             previous.x = m.x;
             previous.y = m.y;
@@ -226,10 +376,19 @@
         return Math.sqrt(dx * dx + dy * dy);
         }
 
-        // Función para limpiar el canvas
-        function clearCanvas() {
+        // Función para limpiar el canvas localmente
+        function clearCanvasLocal() {
             while (svg.lastChild) {
                 svg.removeChild(svg.lastChild);
+            }
+        }
+
+        // Función para limpiar el canvas y notificar a otros
+        function clearCanvas() {
+            clearCanvasLocal();
+            // Notificar a otros usuarios si está conectado
+            if (socket && socket.connected) {
+                socket.emit('clearCanvas');
             }
         }
 
@@ -295,6 +454,18 @@
         }
 
         Frame();
+
+        // Inicializar Socket.IO cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', () => {
+            initSocket();
+        });
+        
+        // Si el DOM ya está listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSocket);
+        } else {
+            initSocket();
+        }
     </script>
   </body>
 </html>
