@@ -4,13 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        body{--t:.5; --scale:3;}
+        body{--t:.5; --scale:3; margin:0; font-family: Arial, sans-serif;}
         svg.root{width:1px;height:1px;position:absolute;left:-100em;}
         svg{
         width: 100vw;
         height: 100vh;
         background:#f9f6f2;
         fill-opacity:0.75;
+        }
+
+        #clearButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #f0c929;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        #clearButton:hover {
+            background: #e6d172;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        #clearButton:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         symbol{overflow:visible}
@@ -44,6 +72,7 @@
     <title>Yellow Flowers</title>
   </head>
   <body>
+    <button id="clearButton">🌸 Limpiar</button>
     <svg class="root">
         <defs>
             <filter id="f" width="200" height="200" x="-100"  y="-100" >
@@ -150,10 +179,6 @@
 
 
         svg.addEventListener("mousedown", e => {
-        // clear the canvas
-        while (svg.lastChild) {
-            svg.removeChild(svg.lastChild);
-        }
         // if bool == true I can draw
         bool = true;
         });
@@ -200,6 +225,16 @@
         let dy = p2.y - p1.y;
         return Math.sqrt(dx * dx + dy * dy);
         }
+
+        // Función para limpiar el canvas
+        function clearCanvas() {
+            while (svg.lastChild) {
+                svg.removeChild(svg.lastChild);
+            }
+        }
+
+        // Event listener para el botón de limpiar
+        document.getElementById('clearButton').addEventListener('click', clearCanvas);
 
         ///////// Initial polygon //////////////
 
