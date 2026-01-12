@@ -40,6 +40,50 @@
         svg .a g:nth-of-type(2) use:nth-of-type(3){transform:rotate(calc(2deg * 180 / var(--n)));}
         svg .a g:nth-of-type(2) use:nth-of-type(4){transform:rotate(calc(3deg * 180 / var(--n)));}
         svg .a g:nth-of-type(2) use:nth-of-type(5){transform:rotate(calc(4deg * 180 / var(--n)));}
+
+        .buttons-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-clear {
+            background: #ff6b6b;
+            color: white;
+        }
+        .btn-clear:hover {
+            background: #ee5a5a;
+            transform: translateY(-2px);
+        }
+        .btn-undo {
+            background: #4ecdc4;
+            color: white;
+        }
+        .btn-undo:hover {
+            background: #3dbdb5;
+            transform: translateY(-2px);
+        }
+        .btn-redo {
+            background: #9b59b6;
+            color: white;
+        }
+        .btn-redo:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
     </style>
     <title>Yellow Flowers</title>
   </head>
@@ -81,6 +125,12 @@
       
       </svg>
 
+      <div class="buttons-container">
+        <button class="btn btn-undo" id="btnUndo">↩ Deshacer</button>
+        <button class="btn btn-redo" id="btnRedo">↪ Rehacer</button>
+        <button class="btn btn-clear" id="btnClear">🗑 Borrar todo</button>
+      </div>
+
     <script>
         const SVG_NS = "http://www.w3.org/2000/svg";
         const SVG_XLINK = "http://www.w3.org/1999/xlink";
@@ -102,6 +152,9 @@
         let previous = { x: 0, y: 0 };
         let scale = 1;
         let bool = false;
+        let currentStroke = []; // Flores del trazo actual
+        let history = []; // Historial de trazos para deshacer
+        let redoHistory = []; // Historial para rehacer
 
         class Flower {
         constructor(n, pos, scale, parent) {
@@ -150,17 +203,20 @@
 
 
         svg.addEventListener("mousedown", e => {
-        // clear the canvas
-        while (svg.lastChild) {
-            svg.removeChild(svg.lastChild);
-        }
-        // if bool == true I can draw
+        // Empezar nuevo trazo
+        currentStroke = [];
         bool = true;
         });
 
         svg.addEventListener("mouseup", e => {
         bool = false;
         previous = {};
+        // Guardar el trazo actual en el historial
+        if (currentStroke.length > 0) {
+            history.push([...currentStroke]);
+            redoHistory = []; // Limpiar rehacer al hacer nuevo trazo
+            currentStroke = [];
+        }
         });
 
         svg.addEventListener("mousemove", e => {
@@ -177,6 +233,7 @@
             }
 
             let flower = new Flower(n, { x: m.x, y: m.y }, scale, svg);
+            currentStroke.push(flower.G); // Guardar referencia de la flor
             setTimeout(() => {
             flower.G.setAttribute("class", `_${flower.n}`);
             }, 50);
@@ -260,6 +317,40 @@
         }
 
         Frame();
+
+        // Botón Borrar todo
+        document.getElementById('btnClear').addEventListener('click', () => {
+            while (svg.lastChild) {
+                svg.removeChild(svg.lastChild);
+            }
+            history = [];
+            redoHistory = [];
+            currentStroke = [];
+        });
+
+        // Botón Deshacer
+        document.getElementById('btnUndo').addEventListener('click', () => {
+            if (history.length > 0) {
+                const lastStroke = history.pop();
+                redoHistory.push(lastStroke); // Guardar para rehacer
+                lastStroke.forEach(flowerG => {
+                    if (flowerG.parentNode) {
+                        flowerG.parentNode.removeChild(flowerG);
+                    }
+                });
+            }
+        });
+
+        // Botón Rehacer
+        document.getElementById('btnRedo').addEventListener('click', () => {
+            if (redoHistory.length > 0) {
+                const strokeToRedo = redoHistory.pop();
+                history.push(strokeToRedo); // Volver al historial
+                strokeToRedo.forEach(flowerG => {
+                    svg.appendChild(flowerG);
+                });
+            }
+        });
     </script>
   </body>
 </html>
